@@ -18,6 +18,17 @@ export class TrainService {
     return this.prisma.train.findUnique({ where: { id } });
   }
 
+  searchByName(name: string) {
+    return this.prisma.train.findMany({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+    });
+  }
+
   update(id: number, data) {
     return this.prisma.train.update({ where: { id }, data });
   }

@@ -12,6 +12,9 @@ import {
 } from '@nestjs/common';
 import { TrainService } from './train.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { CreateTrainDto } from './dto/create-train.dto';
+import { PutTrainDto } from './dto/put-train.dto';
+import { PatchTrainDto } from './dto/patch-train.dto';
 
 @Controller('trains')
 @UseGuards(JwtAuthGuard)
@@ -19,15 +22,20 @@ export class TrainController {
   constructor(private train: TrainService) {}
 
   @Post()
-  create(@Body() body) {
-    return this.train.create(body);
+  create(@Body() dto: CreateTrainDto) {
+    return this.train.create(dto);
   }
 
   @Get()
-  findAll(
-    @Query('sortBy') sortBy: string,
-    @Query('order') order: 'asc' | 'desc',
+  findAllOrSearch(
+    @Query('sortBy') sortBy?: string,
+    @Query('order') order?: 'asc' | 'desc',
+    @Query('name') name?: string,
   ) {
+    if (name) {
+      return this.train.searchByName(name);
+    }
+
     return this.train.findAll(sortBy, order);
   }
 
@@ -37,13 +45,13 @@ export class TrainController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() body) {
-    return this.train.update(+id, body);
+  update(@Param('id') id: string, @Body() dto: PutTrainDto) {
+    return this.train.update(+id, dto);
   }
 
   @Patch(':id')
-  patch(@Param('id') id: string, @Body() body) {
-    return this.train.update(+id, body);
+  patch(@Param('id') id: string, @Body() dto: PatchTrainDto) {
+    return this.train.update(+id, dto);
   }
 
   @Delete(':id')
